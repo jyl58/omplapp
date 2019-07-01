@@ -20,20 +20,26 @@ if (OMPL_BUILD_DEMOS)
     add_omplapp_demo(demo_AnytimePathShortening AnytimePathShorteningDemo.cpp)
 
     # create executable for planning with OPENDE
-    if (OPENDE_FOUND AND DRAWSTUFF_FOUND)
+    if (ODE_FOUND AND DRAWSTUFF_FOUND)
         if(APPLE)
+            set_package_properties(GLUT PROPERTIES
+                URL "https://www.opengl.org/resources/libraries/glut/"
+                PURPOSE "Used for one ODE demo program on macOS.")
             find_package(GLUT)
         endif(APPLE)
-        add_definitions(${OPENDE_DEFINITIONS})
-        include_directories(${OPENDE_INCLUDE} ${DRAWSTUFF_INCLUDE_DIR} ${GLUT_INCLUDE_DIR})
+        include_directories(${ODE_INCLUDE_DIRS} ${DRAWSTUFF_INCLUDE_DIR} ${GLUT_INCLUDE_DIR})
 
         aux_source_directory(OpenDEPlanning OpenDEPlanning_SRC)
         add_executable(demo_OpenDEPlanning ${OpenDEPlanning_SRC})
-        target_link_libraries(demo_OpenDEPlanning ${DRAWSTUFF_LIBRARY} ${OPENDE_LIBRARY} ${OMPLAPP_DEMO_LIBRARIES} ${GLUT_LIBRARIES})
+        target_link_libraries(demo_OpenDEPlanning ${DRAWSTUFF_LIBRARY} ${ODE_LIBRARIES} ${OMPLAPP_DEMO_LIBRARIES} ${GLUT_LIBRARIES})
     endif()
 endif(OMPL_BUILD_DEMOS)
 
-file(GLOB_RECURSE OMPLAPP_DEMO_FILES "*/*")
-install(FILES ${OMPLAPP_DEMO_FILES}
-    DESTINATION ${OMPL_DEMO_INSTALL_DIR}
+file(GLOB OMPLAPP_DEMO_PY_FILES "*/*.py")
+install_python(PROGRAMS ${OMPLAPP_DEMO_PY_FILES}
+  DESTINATION "${OMPL_DEMO_INSTALL_DIR}"
+  COMPONENT omplapp)
+file(GLOB OMPLAPP_DEMO_CXX_FILES "*/*.cpp")
+install(FILES ${OMPLAPP_DEMO_CXX_FILES}
+    DESTINATION "${OMPL_DEMO_INSTALL_DIR}"
     COMPONENT omplapp)
